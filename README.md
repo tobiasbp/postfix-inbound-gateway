@@ -1,5 +1,11 @@
 # postfix-inbound-gateway
-A Docker image based in Alpine Linux with Postfix running as an inbound gateway
+A Docker image based on Alpine Linux with Postfix running as an inbound gateway.
+
+Configure the domains you want to receive mail for, and which domains to rewrite to.
+This essentialy adds a domain as an alias for all (configurable) users in
+another (currently used) domain.
+
+Mail is never delivered locally.
 
 # Volumes
 
@@ -15,6 +21,9 @@ and [smtp_tls_chain_files]{http://www.postfix.org/postconf.5.html#smtp_tls_chain
 
 You can run [this container]{https://hub.docker.com/r/neilpang/acme.sh} to
 create certificates using [acme.sh]{https://github.com/acmesh-official/acme.sh}. 
+
+A cronjob reloads Postfix daily to pick up (renewed) certificates.
+
 
 # Environment variables
 The container can be configured through the following environment variables.
