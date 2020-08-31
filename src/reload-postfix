@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Reload postfix configuration
+/usr/sbin/postfix reload
