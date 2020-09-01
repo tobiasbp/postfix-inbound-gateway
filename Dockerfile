@@ -3,9 +3,6 @@ FROM alpine:3.12
 # The contact email of the admin of the system (For certbot)
 ENV PF_ADMIN_EMAIL "admin@mydomain.com"
 
-# The FQDN of the gateway
-ENV PF_MYHOSTNAME "gateway.mydomain.com"
-
 # A list of domains to accept mail for
 ENV PF_VIRTUAL_ALIAS_DOMAINS "example1.com,example2.com"
 

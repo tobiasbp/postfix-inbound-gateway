@@ -12,14 +12,18 @@ The container logs to stdout.
 
 Run the image in a container
 1. `docker pull tobiasbp/postfix-inbound-gateway`
-2. `docker run --rm --name postfix-demo  -p 2525:25 tobiasbp/postfix-inbound-gateway`
+2. `docker run --rm --hostname mymail.example.com --name postfix-demo  -p 2525:25 tobiasbp/postfix-inbound-gateway`
 3. You can now connect to the gateway at `localhost:2525`.
-4. Play around with [swaks]{http://www.jetmore.org/john/code/swaks/} to test your configuration.
+4. Play around with [swaks](http://www.jetmore.org/john/code/swaks/) to test your configuration.
 
 You may disable som of the sender restrictions (See below) when testing.
 
-# Volumes
+Make sure:
+1. The hostname of the container matches the [_fqdn_](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) of your server
+2. Configure [reverse DNS](https://en.wikipedia.org/wiki/Reverse_DNS_lookup) so the server's IP, resolves to your server's_FQDN_.
 
+# Volumes
+The image has thw following volumes.
 * /var/spool/postfix: Mails beeing processed are stored here
 * /etc/postfix/certs: Make certs available to postfix in this dir (See TLS)
 
@@ -31,8 +35,8 @@ Read more in the Postfix documentation for [smtpd_tls_chain_files](http://www.po
 and [smtp_tls_chain_files](http://www.postfix.org/postconf.5.html#smtp_tls_chain_files).
 Both if those are set to */etc/postfix/certs/certs.pem* in the image.
 
-You can run [this container]{https://hub.docker.com/r/neilpang/acme.sh} to
-create certificates using [acme.sh]{https://github.com/acmesh-official/acme.sh}. 
+You can run [this container](https://hub.docker.com/r/neilpang/acme.sh) to
+create certificates using [acme.sh](https://github.com/acmesh-official/acme.sh/wiki/Run-acme.sh-in-docker). 
 
 A cronjob reloads Postfix daily to pick up (renewed) certificates.
 
@@ -40,11 +44,8 @@ A cronjob reloads Postfix daily to pick up (renewed) certificates.
 # Environment variables
 The container can be configured through the following environment variables.
 The names of the variables correspond with the Postfix configuration parameters,
-bit with a prefix of *PF_*.  
+but with a prefix of *PF_*.
 
-
-## PF_MYHOSTNAME
-The fully qualified domain name of the mail server.
 
 ## PF_VIRTUAL_ALIAS_DOMAINS
 Comma separated list of domains to receive mails for. If a domain is not

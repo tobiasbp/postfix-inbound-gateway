@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Set hostname
-postconf -e "myhostname = ${PF_MYHOSTNAME}"
-
 # Comma separated list of domains to accept mail for
 postconf -e "virtual_alias_domains = ${PF_VIRTUAL_ALIAS_DOMAINS}"
 
