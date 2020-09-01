@@ -26,10 +26,6 @@ RUN apk add --no-cache --update postfix ca-certificates bash && \
     # Clean up
     (rm "/tmp/"* 2>/dev/null || true) && (rm -rf /var/cache/apk/* 2>/dev/null || true)
 
-
-# Volumes for mail spool and certs
-VOLUME [ "/var/spool/postfix", "/etc/spool/certs"]
-
 # Expose smtp port
 EXPOSE 25
 
