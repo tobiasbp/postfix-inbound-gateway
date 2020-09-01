@@ -23,10 +23,10 @@ else
     postconf -e "transport_maps=hash:/etc/postfix/transport"
 fi
 
-# Require that a remote SMTP client introduces itself with the HELO or EHLO command
+# Sender must send HELO
 postconf -e "smtpd_helo_required=${PF_SMTPD_HELO_REQUIRED}"
 
-# Reject the request when the HELO or EHLO hostname has no DNS A or MX record.
+# Helo restrictions
 postconf -e "smtpd_helo_restrictions=${PF_SMTPD_HELO_RESTRICTIONS}"
 
 # Sender restrictions

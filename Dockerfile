@@ -1,12 +1,7 @@
 FROM alpine:3.12
 
-# The contact email of the admin of the system (For certbot)
-ENV PF_ADMIN_EMAIL "admin@mydomain.com"
-
 # A list of domains to accept mail for
 ENV PF_VIRTUAL_ALIAS_DOMAINS "example1.com,example2.com"
-
-# FIXME: Then we recieve all mails to domain?
 
 # Domain mappings (From domain -> to domain)
 ENV PF_VIRTUAL_ALIAS_MAPS "@example1.com @other-domain.com\n@example2.com @other-domain.com"
@@ -51,12 +46,13 @@ RUN mkdir /etc/postfix/certs && \
     sed -i -E 's/(local[[:space:]]+unix)/#\1/g' /etc/postfix/master.cf && \
     # Outgoing TLS
     postconf -e "smtp_tls_loglevel=1" && \
-    postconf -e "smtp_tls_chain_files=/etc/postfix/certs/certs.pem" && \
+    postconf -e "smtp_tls_key_file=/etc/postfix/certs/key.pem" && \
+    postconf -e "smtp_tls_cert_file=/etc/postfix/certs/fullchain.pem" && \
     # Incoming TLS
     postconf -e "smtpd_tls_loglevel=1" && \
-    postconf -e "smtpd_tls_chain_files=/etc/postfix/certs/certs.pem" && \
-    postconf -e "smtpd_tls_received_header=yes"
-
+    postconf -e "smtpd_tls_received_header=yes" && \
+    postconf -e "smtpd_tls_key_file=/etc/postfix/certs/key.pem" && \
+    postconf -e "smtpd_tls_cert_file=/etc/postfix/certs/fullchain.pem"
 
 # Script to reload postfix via cron (For reloading certificates)
 COPY src/reload-postfix /etc/periodic/daily/
