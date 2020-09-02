@@ -10,7 +10,7 @@ ENV PF_VIRTUAL_ALIAS_MAPS "@example1.com @other-domain.com\n@example2.com @other
 ENV PF_SMTPD_HELO_REQUIRED "yes"
 
 # HELO restrictions for serveres sending us mail
-ENV PF_SMTPD_HELO_RESTRICTIONS "reject_unknown_helo_hostname"
+ENV PF_SMTPD_HELO_RESTRICTIONS "reject_unknown_helo_hostname,reject_invalid_helo_hostname,reject_non_fqdn_helo_hostname"
 
 # Restrictions on senders
 ENV  PF_SMTPD_SENDER_RESTRICTIONS "reject_unknown_client_hostname,reject_unknown_sender_domain"
@@ -52,7 +52,9 @@ RUN mkdir /etc/postfix/certs && \
     postconf -e "smtpd_tls_loglevel=1" && \
     postconf -e "smtpd_tls_received_header=yes" && \
     postconf -e "smtpd_tls_key_file=/etc/postfix/certs/key.pem" && \
-    postconf -e "smtpd_tls_cert_file=/etc/postfix/certs/fullchain.pem"
+    postconf -e "smtpd_tls_cert_file=/etc/postfix/certs/fullchain.pem" && \
+    # Anti mail address harvesting
+    postconf -e "disable_vrfy_command=yes"
 
 # Script to reload postfix via cron (For reloading certificates)
 COPY src/reload-postfix /etc/periodic/daily/

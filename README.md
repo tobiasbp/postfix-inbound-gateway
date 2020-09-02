@@ -17,29 +17,29 @@ Run the image in a container
 4. Play around with [swaks](http://www.jetmore.org/john/code/swaks/) to test your configuration.
 
 You may disable som of the sender restrictions (See below) when testing.
+Also, a lot of ISPs will block outgoing traffic on port 25 (SMTP default),
+so you may need to make Postfix avaliable on another port, like 2525, while testing.
 
 Make sure:
 1. The hostname of the container matches the [_fqdn_](https://en.wikipedia.org/wiki/Fully_qualified_domain_name) of your server
 2. Configure [reverse DNS](https://en.wikipedia.org/wiki/Reverse_DNS_lookup) so the server's IP, resolves to your server's_FQDN_.
 
-# Volumes
-The image has thw following volumes.
+# Directories
+You should probably create volumes for the following directories
 * /var/spool/postfix: Mails beeing processed are stored here
 * /etc/postfix/certs: Make certs available to postfix in this dir (See TLS)
 
 # TLS
-For TLS to work you need to add the following valid chain file in the container.
-* */etc/postfix/certs/certs.pem*
-
-Read more in the Postfix documentation for [smtpd_tls_chain_files](http://www.postfix.org/postconf.5.html#smtpd_tls_chain_files).
-and [smtp_tls_chain_files](http://www.postfix.org/postconf.5.html#smtp_tls_chain_files).
-Both if those are set to */etc/postfix/certs/certs.pem* in the image.
+For TLS to work you need to add the following valid files in the container.
+* */etc/postfix/certs/key.pem*
+* */etc/postfix/certs/fullchain.pem*
 
 You can run [this container](https://hub.docker.com/r/neilpang/acme.sh) to
-create certificates using [acme.sh](https://github.com/acmesh-official/acme.sh/wiki/Run-acme.sh-in-docker). 
+create certificates using [acme.sh](https://github.com/acmesh-official/acme.sh/wiki/Run-acme.sh-in-docker)
+and place them in */etc/postfix/certs*.
 
-A cronjob reloads Postfix daily to pick up (renewed) certificates.
-
+A cronjob in this image reloads Postfix daily to pick up (renewed) certificates.
+If you do not supply certificates, support for TLS will be disabled.
 
 # Environment variables
 The container can be configured through the following environment variables.
@@ -89,9 +89,11 @@ Default value: *none*
 [Postfix documentation](http://www.postfix.org/postconf.5.html#smtpd_helo_required).
 Default value: *yes*
 
+If this is not enabled, none of the restrictions below will be enforced.
+
 ## PF_SMTPD_HELO_RESTRICTIONS
 [Postfix documentation](http://www.postfix.org/postconf.5.html#smtpd_helo_restrictions).
-Default value: *reject_unknown_helo_hostname*
+Default value: *reject_unknown_helo_hostname,reject_invalid_helo_hostname,reject_non_fqdn_helo_hostname*
 
 ## PF_SMTPD_SENDER_RESTRICTIONS
 [Postfix documentation](http://www.postfix.org/postconf.5.html#smtpd_sender_restrictions).
@@ -99,5 +101,10 @@ You can configure the use of real time blacklists here.
 Default value: *"reject_unknown_client_hostname,reject_unknown_sender_domain"*
 
 # Running a sidecar container creating certificates
+In this example, */var/certs* is maped to a Docker volume which is mounted at */etc/postfix/certs* in the Postfix container.
 
-* docker pull neilpang/acme.sh
+Run acme.sh in a container. A cronjob in the container will renew certificates:
+* `docker run --rm  -itd --name=acme.sh neilpang/acme.sh daemon`
+
+Create a certficate in the acme.sh container:
+* `docker exec acme.sh --issue -d mail02.everland.no --standalone --fullchain-file /var/certs/fullchain.pem --key-file /var/certs/key.pem --alpn`
