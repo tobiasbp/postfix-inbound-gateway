@@ -48,11 +48,15 @@ RUN mkdir /etc/postfix/certs && \
     postconf -e "smtp_tls_loglevel=1" && \
     postconf -e "smtp_tls_key_file=/etc/postfix/certs/key.pem" && \
     postconf -e "smtp_tls_cert_file=/etc/postfix/certs/fullchain.pem" && \
+    postconf -e "smtp_tls_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1" && \
+    postconf -e "smtp_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1" && \
     # Incoming TLS
     postconf -e "smtpd_tls_loglevel=1" && \
     postconf -e "smtpd_tls_received_header=yes" && \
     postconf -e "smtpd_tls_key_file=/etc/postfix/certs/key.pem" && \
     postconf -e "smtpd_tls_cert_file=/etc/postfix/certs/fullchain.pem" && \
+    postconf -e "smtpd_tls_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1" && \
+    postconf -e "smtpd_tls_mandatory_protocols = !SSLv2,!SSLv3,!TLSv1,!TLSv1.1" && \
     # Anti mail address harvesting
     postconf -e "disable_vrfy_command=yes"
 
